@@ -8,20 +8,12 @@ describe('ArrayBufferConverter', () => {
     converter = new ArrayBufferConverter();
   });
 
-  test('загрузить в буфер и преобразовать в строку', () => {
-    const buffer = getBuffer();
-    converter.load(buffer);
-    const result = converter.toString();
-    expect(result).toBe('{"data":{"user":{"id":1,"name":"Hitman","level":10}}}');
-  });
-
-  test('конвертер без буфера вернёт пустую строку', () => {
-    expect(converter.toString()).toBe('');
-  });
-
-  test('пустой буфер вернёт пустую строку', () => {
-    const emptyBuffer = new ArrayBuffer(0);
-    converter.load(emptyBuffer);
-    expect(converter.toString()).toBe('');
+  test.each([
+    { description: 'загруженный буфер с данными', buffer: getBuffer(), expected: '{"data":{"user":{"id":1,"name":"Hitman","level":10}}}' },
+    { description: 'буфер не загружен', buffer: null, expected: '' },
+    { description: 'загружен пустой буфер', buffer: new ArrayBuffer(0), expected: '' },
+  ])('$description, toString возвращает "$expected"', ({ buffer, expected }) => {
+    if (buffer) converter.load(buffer);
+    expect(converter.toString()).toBe(expected);
   });
 });
